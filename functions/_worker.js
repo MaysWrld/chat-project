@@ -23,7 +23,7 @@ export class ChatRoom {
     socket.accept();
     this.sessions.push(socket);
     
-    // --- 发送历史记录 ---
+    // --- 发送 历史记录 ---
     const history = await this.env.CHAT_KV.list({ limit: 20, reverse: true });
     const historyDataPromises = history.keys.map(key => this.env.CHAT_KV.get(key.name));
     const historyData = await Promise.all(historyDataPromises);
