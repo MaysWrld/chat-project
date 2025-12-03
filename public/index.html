@@ -25,13 +25,15 @@
         </div>
     </div>
 
-    <script>
+    <script type="module"> 
+        // 🚨 核心修正：添加 type="module" 属性
+
         const chatLog = document.getElementById('chat-log');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         
-        // 🚨 核心变更：从注入的环境变量中读取 Worker URL
-        const WORKER_URL = import.meta.env.VITE_WORKER_URL; 
+        // 此代码行保持不变
+        const WORKER_URL = import.meta.env.VITE_WORKER_URL;
 
         let wsUrl;
         if (WORKER_URL) {
