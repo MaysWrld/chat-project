@@ -1,6 +1,5 @@
 // ===========================================
 // 1. Durable Object 类定义 (ChatRoom)
-// 注意：这里必须是 export class，它同时导出了 ChatRoom
 // ===========================================
 export class ChatRoom {
   constructor(state, env) {
@@ -56,21 +55,22 @@ export class ChatRoom {
 }
 
 // ===========================================
-// 2. Worker 入口逻辑 (路由)
+// 2. Worker 入口逻辑 (新的 fetch 函数)
 // ===========================================
 export default {
     async fetch(request, env, ctx) {
-        const url = new URL(request.url);
-
-        // _worker.js 自动识别路由 /api/websocket
-        if (url.pathname === "/api/websocket") {
+        // 🚨 关键：Worker 直接检查 WebSocket 升级请求，忽略路径检查
+        if (request.headers.get("Upgrade") === "websocket") {
             let id = env.CHAT_ROOM.idFromName("global-chat-room-instance");
             let stub = env.CHAT_ROOM.get(id);
+
+            // 转发请求给 Durable Object
             return stub.fetch(new Request("http://do/websocket", request));
         }
-
-        return env.ASSETS.fetch(request);
+        
+        // 任何非 WebSocket 请求都返回 404
+        return new Response("Not Found (Use the Pages URL for the site)", { status: 404 });
     }
 };
 
-// ⚠️ 注意：最后一行多余的 export { ChatRoom } 已经被移除！
+// ⚠️ 注意：没有多余的 export { ChatRoom } 语句
